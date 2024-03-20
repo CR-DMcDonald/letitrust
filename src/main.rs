@@ -3,12 +3,13 @@ use serde_json::Value;
 
 #[tokio::main]
 async fn main() {
+    //print the banner
+    print_banner();
+
     //get file name from command line args
     let args: Vec<String> = std::env::args().collect();
     if args.len() != 3 {
-        println!("Usage: letitrust -f <filename>");
-        println!("       letitrust -d <domain>");
-        println!("{}", args.len());
+        print_usage();
         return;
     }
 
@@ -16,26 +17,47 @@ async fn main() {
     let mut domain_status_cache: Vec<(String, String)> = Vec::new();
 
     if args[1] != "-f" && args[1] != "-d" {
-        println!("Usage: letitrust -f <filename>");
-        println!("       letitrust -d <domain>");
-        println!("{}", args[1]);
+        print_usage();
+        return;
+    }
+    
+    //get path to executable
+    let path = std::env::current_exe().unwrap().parent().unwrap().to_path_buf();
+    std::env::set_current_dir(&path).unwrap();
+    
+    //read the config file
+    let gandi: toml::Value = toml::from_str(&std::fs::read_to_string("config.toml").expect("Unable to read config.toml")).unwrap();
+    let gandi_pat = gandi["gandi_pat"].as_str();
+
+    let gandi_pat = match gandi_pat {
+        Some(gp) => { gp },
+        None => {
+            print_red("gandi_pat not found in config.toml");
+            return;
+        }
+    };
+
+    //verify the key is 40 chracters of hexidecimal
+    if gandi_pat.len() != 40 {
+        print_red("gandi_pat is not 40 characters long");
+        return;
+    }
+    if gandi_pat.chars().all(|c| c.is_ascii_hexdigit()) == false {
+        print_red("gandi_pat is not hexidecimal");
         return;
     }
 
-    //use toml to get gandi_api_key from config.toml
-    let gandi: toml::Value = toml::from_str(&std::fs::read_to_string("config.toml").expect("Unable to read file")).unwrap();
-    let gandi_api_key = gandi["gandi_api_key"].as_str().unwrap();
-
+    //parse the key, check it looks good
     let domainlist: Vec<String>;
     if args[1] == "-d" {
         domainlist = args[2].clone().split(",").map(|s| s.to_string()).collect();
-    } else {
+    }
+    else {
         domainlist = std::fs::read_to_string(args[2].clone()).expect("Unable to read file").split("\n").map( |s| s.to_string() ).collect();
     }
 
     //iterate through the list of domains
     for domain in domainlist {
-        println!("");
         println!("");
         //print the domain
         println!("Checking {}... ", domain);
@@ -68,20 +90,29 @@ async fn main() {
             .body(xml_string)
             .send().await;
 
-        if res.is_err() {
-            println!(" error");
-            continue;
-        }
+        let body = match res {
+            Ok(r) => {
+                r.text().await
+            },
+            Err(e) => {
+                print_red(" error");
+                continue;
+            }
+        };
 
-        let body = res.unwrap().text().await;
-        if body.is_err() {
-            println!(" error");
-            continue;
-        }
+        let body = match body {
+            Ok(b) => {
+                b
+            },
+            Err(e) => {
+                print_red(" error");
+                continue;
+            }
+        };
         
         //extract each domain from the response, which is <Domain> </Domain>
         let re = regex::Regex::new(r"<Domain>(.*?)</Domain>").unwrap();
-        for cap in re.captures_iter(&body.unwrap()) {
+        for cap in re.captures_iter(&body) {
             //extract domain
             let domain = &cap[1].to_string();
             let domain_clone = domain.clone();
@@ -123,7 +154,7 @@ async fn main() {
             //lookup gandi API, see if you can register the domain
             let gandi = reqwest::Client::new();
             let res = gandi.get(&format!("https://api.gandi.net/v5/domain/check?name={}", domain))
-                .header("Authorization", format!("Bearer {}", gandi_api_key))
+                .header("Authorization", format!("Bearer {}", gandi_pat))
                 .send().await;
             
             let body = res.unwrap().text().await;
@@ -187,4 +218,22 @@ fn simplify_domain(domain: &str) -> Option<String> {
     }
     // If it's a single part or otherwise doesn't match the conditions, return None
     None
+}
+
+fn print_banner() {
+    println!("");
+    println!("██      ███████ ████████     ██ ████████     ██████  ██    ██ ███████ ████████ ");
+    println!("██      ██         ██        ██    ██        ██   ██ ██    ██ ██         ██    ");
+    println!("██      █████      ██        ██    ██        ██████  ██    ██ ███████    ██    ");
+    println!("██      ██         ██        ██    ██        ██   ██ ██    ██      ██    ██    ");
+    println!("███████ ███████    ██        ██    ██        ██   ██  ██████  ███████    ██    ");                                                                    
+    println!("");                                                                  
+    println!("letitrust v0.1");
+    println!("Written by Darren McDonald, Cryptic Red");
+}
+
+fn print_usage() {
+    println!("");
+    println!("Usage: ./letitrust -f <filename>");
+    println!("       ./letitrust -d <domain>");
 }

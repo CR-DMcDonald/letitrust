@@ -6,19 +6,19 @@ This tool was inspired by AADInternals and Let It Go. The motivation behind this
 
 There is some caching performed during a run and onmicrosoft.com domains are skipped to speed up the process.
 
-### Limitations
+### Limitations/TODO
 
-* Right now this tool is not fully checking for all the possible responses from Gandi, and so is failing to give answers for some domains like .id and .vn. It may say they are availible when they are not. This means while its more accurate using it whois, it doesnt yet solve the problem of need to do additional manual checking with the results.
+* Right now this tool failing to give answers for some domains like .id and .vn. It may say they are availible when they are not. This means while its more accurate than using whois, it doesnt yet solve the problem of need to do additional manual checking with the results.
 * It's also a bit slow. It may be possible to speed this up by taking advantage of tokio async Rust, which been used in places in preperation for this. Gandi however implements rate limiting and we dont want to get banned so would need some careful testing. I'll get it done if I ever have to scan a lot of domains.
 * The code used to sort out if it has a second level domain like .co.uk is a bit crude, it might get things wrong for some unusual cases.
-* Error handling is poor.
-* I have only tested the application on Debian based Linux, I expect it'll work on other flavours just fine.
+* Error handling is poor, needs to print more detailed messages.
+* I have only tested the application on Debian based Linux, but I expect it'll work on other flavours just fine.
 * It is untested on MacOS, I expect it'll work if you compile it yourself.
-* Similarally it'll also probably run on Windows, but the ANSI colours may not work and print weird characters control sequences instead.
+* Similarally it'll also probably run on Windows, but the ANSI colours may not work and print weird characters control sequences instead. Again you'll need to compile this yourself.
 
-### Setup
+### Running the Precompiled Binary
 
-No setup is required as everything statically compiled into a single huge binary. Just mark it as executable and run it. You can download it from releases or compile it yourself.
+For Linux users no setup is required as everything statically compiled into a single binary, letitrust. Just mark it as executable (`chmod u+x ./letitrust`) and. You can download it from releases or compile it yourself.
 
 ### Self Compiling
 

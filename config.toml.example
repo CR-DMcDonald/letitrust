@@ -1,2 +1,2 @@
 
-gandi_api_key = "YOUR_GANDI_API_KEY"
+gandi_pat = "YOUR_GANDI_PERSONAL_ACCESS_TOKEN"
