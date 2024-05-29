@@ -1,5 +1,11 @@
+mod dns;
+mod gandi;
+mod util;
+
 use std::io::Write;
+use gandi::Gandi;
 use serde_json::Value;
+use util::*;
 
 #[tokio::main]
 async fn main() {
@@ -13,41 +19,22 @@ async fn main() {
         return;
     }
 
-    //create a vector for domain, status pairs
-    let mut domain_status_cache: Vec<(String, String)> = Vec::new();
-
     if args[1] != "-f" && args[1] != "-d" {
         print_usage();
         return;
     }
-    
-    //get path to executable
-    let path = std::env::current_exe().unwrap().parent().unwrap().to_path_buf();
-    std::env::set_current_dir(&path).unwrap();
-    
-    //read the config file
-    let gandi: toml::Value = toml::from_str(&std::fs::read_to_string("config.toml").expect("Unable to read config.toml")).unwrap();
-    let gandi_pat = gandi["gandi_pat"].as_str();
 
-    let gandi_pat = match gandi_pat {
-        Some(gp) => { gp },
-        None => {
-            print_red("gandi_pat not found in config.toml");
+    //parse the key, check it looks good
+    let mut gandi = match Gandi::new() {
+        Ok(g) => { g },
+        Err(e) => {
+            print_red(&e);
             return;
         }
     };
 
-    //verify the key is 40 chracters of hexidecimal
-    if gandi_pat.len() != 40 {
-        print_red("gandi_pat is not 40 characters long");
-        return;
-    }
-    if gandi_pat.chars().all(|c| c.is_ascii_hexdigit()) == false {
-        print_red("gandi_pat is not hexidecimal");
-        return;
-    }
+    let mut dns_checker = dns::DnsChecker::new(vec!["8.8.8.8".to_string()]);
 
-    //parse the key, check it looks good
     let domainlist: Vec<String>;
     if args[1] == "-d" {
         domainlist = args[2].clone().split(",").map(|s| s.to_string()).collect();
@@ -60,8 +47,44 @@ async fn main() {
     for domain in domainlist {
         println!("");
         //print the domain
-        println!("Checking {}... ", domain);
+        print!("Checking {}... ", domain);
         std::io::stdout().flush().unwrap();
+
+        //lookup gandi API, see if you can register the domain
+        let status = gandi.check_domain(&domain).await;
+        let status = match status {
+            Ok(s) => { s },
+            Err(e) => {
+                print_red(e.to_string().as_str());
+                continue;
+            }
+        };
+
+        if status == "available" {
+            print_red(&status);
+        } else {
+            print_green(&status);
+        }        
+
+        //check spf records
+        let spf_result = dns_checker.spf_records_check(&domain, &mut gandi).await;
+        match spf_result {
+            Ok(s) => { s },
+            Err(e) => {
+                print_red(&e);
+                continue;
+            }
+        };
+
+        //check dmarc records
+        let dmarc_result = dns_checker.dmarc_check(&domain).await;
+        match dmarc_result {
+            Ok(()) => {},
+            Err(e) => {
+                print_red(&e);
+                continue;
+            }
+        };
 
         let xml_string = format!(r#"<?xml version="1.0" encoding="utf-8"?>
 <soap:Envelope xmlns:exm="http://schemas.microsoft.com/exchange/services/2006/messages" xmlns:ext="http://schemas.microsoft.com/exchange/services/2006/types" xmlns:a="http://www.w3.org/2005/08/addressing" xmlns:soap="http://schemas.xmlsoap.org/soap/envelope/" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:xsd="http://www.w3.org/2001/XMLSchema">
@@ -118,7 +141,7 @@ async fn main() {
             let domain_clone = domain.clone();
             let domain = simplify_domain(domain).unwrap().to_string();
 
-            print!("Found domain: {} ... ", &cap[1]);
+            print!("Found Azure Tenant domain: {} ... ", &cap[1]);
             std::io::stdout().flush().unwrap();
 
             //skip onmicrosoft.com
@@ -133,69 +156,50 @@ async fn main() {
                 std::io::stdout().flush().unwrap();
             }
 
-            //check if we have already checked this domain
-            let mut found = false;
-            for (d, status) in &domain_status_cache {
-                if d == &domain {
-                    if status == "available" {
-                        print_red(status);
-                    } else {
-                        print_green(status);
-                    }
-                    found = true;
-                    break;
-                }
-            }
-
-            if found {
-                continue;
-            }
-
             //lookup gandi API, see if you can register the domain
-            let gandi = reqwest::Client::new();
-            let res = gandi.get(&format!("https://api.gandi.net/v5/domain/check?name={}", domain))
-                .header("Authorization", format!("Bearer {}", gandi_pat))
-                .send().await;
-            
-            let body = res.unwrap().text().await;
+            let status = gandi.check_domain(&domain).await;
 
-            if body.is_err() {
-                println!(" error");
-                continue;
-            }
-
-            let body = body.unwrap();
-
-            // Parse the string of data into serde_json::Value.
-            let v: Value = serde_json::from_str(&body).unwrap();
-
-            // Navigate through the JSON to find the status.
-            if let Some(products) = v["products"].as_array() {
-                for product in products {
-                    if let Some(status) = product["status"].as_str() {
-                        if status == "available" {
-                            domain_status_cache.push((domain.clone(), "available".to_string()));
-                            print_red(status);
-                        } else {
-                            domain_status_cache.push((domain.clone(), status.to_string()));
-                            print_green(status);
-                        }
-                    }
+            let status = match status {
+                Ok(s) => { s },
+                Err(e) => {
+                    print_red(e.to_string().as_str());
+                    continue;
                 }
+            };
+
+            //print the status
+            if status == "available" {
+                print_red(&status);
+            } else {
+                print_green(&status);
             }
+
+            //check spf records
+            let spf_result = dns_checker.spf_records_check(&domain, &mut gandi).await;
+            match spf_result {
+                Ok(s) => { s },
+                Err(e) => {
+                    print_red(&e);
+                    continue;
+                }
+            };
+
+            //check dmarc records
+            let dmarc_result = dns_checker.dmarc_check(&domain).await;
+            match dmarc_result {
+                Ok(()) => {},
+                Err(e) => {
+                    print_red(&e);
+                    continue;
+                }
+            };
+
         }
             
     }
 
 }
 
-fn print_green(text: &str) {
-    println!("\x1B[32m{}\x1B[0m", text);
-}
-
-fn print_red(text: &str) {
-    println!("\x1B[31m{}\x1B[0m", text);
-}
 
 fn simplify_domain(domain: &str) -> Option<String> {
     let parts: Vec<&str> = domain.split('.').collect();
@@ -218,22 +222,4 @@ fn simplify_domain(domain: &str) -> Option<String> {
     }
     // If it's a single part or otherwise doesn't match the conditions, return None
     None
-}
-
-fn print_banner() {
-    println!("");
-    println!("██      ███████ ████████     ██ ████████     ██████  ██    ██ ███████ ████████ ");
-    println!("██      ██         ██        ██    ██        ██   ██ ██    ██ ██         ██    ");
-    println!("██      █████      ██        ██    ██        ██████  ██    ██ ███████    ██    ");
-    println!("██      ██         ██        ██    ██        ██   ██ ██    ██      ██    ██    ");
-    println!("███████ ███████    ██        ██    ██        ██   ██  ██████  ███████    ██    ");                                                                    
-    println!("");                                                                  
-    println!("letitrust v0.1");
-    println!("Written by Darren McDonald, Cryptic Red");
-}
-
-fn print_usage() {
-    println!("");
-    println!("Usage: ./letitrust -f <filename>");
-    println!("       ./letitrust -d <domain>");
 }
