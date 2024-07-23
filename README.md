@@ -2,7 +2,7 @@
 
 Let It Rust is a tool for red and blue teamers looking to identify all the domains part of Microsoft tenant and automatically check if they are availible to purchase using the Gandi API. While this no longer allows access (see articles in Further Reading) to the tenant there are still excellent reasons to investigate this when looking to attack or defend an Azure tenant.
 
-This tool was inspired by AADInternals and Let It Go. The motivation behind this was to use the gandi API to get better accuracy, as using whois information is prone to false positives.
+This tool was inspired by AADInternals and Let It Go. The motivation behind this was to use the gandi API to get better accuracy, as using whois information is prone to false positives. It also checks if common email issues, and checks to see if spf record domains are availible.
 
 There is some caching performed during a run and onmicrosoft.com domains are skipped to speed up the process.
 
