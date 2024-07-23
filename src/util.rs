@@ -7,7 +7,7 @@ pub fn print_banner() {
     println!("██      ██         ██        ██    ██        ██   ██ ██    ██      ██    ██    ");
     println!("███████ ███████    ██        ██    ██        ██   ██  ██████  ███████    ██    ");                                                                    
     println!("");                                                                  
-    println!("letitrust v0.1");
+    println!("letitrust v0.2");
     println!("Written by Darren McDonald, Cryptic Red");
 }
 

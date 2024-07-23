@@ -49,7 +49,7 @@ impl DnsChecker {
     }
 
     pub async fn spf_records_check(&mut self, domain: &str, gandi: &mut Gandi) -> Result<(), String> {
-        // A DNS Message can be easily constructed
+
         let mut m = Message::default();
         m.add_question(domain, Type::TXT, Class::Internet);
         m.add_extension(Extension {   // Optionally add a EDNS extension
@@ -112,7 +112,7 @@ impl DnsChecker {
             //next extract all include statements using regex searching for "include:" and ending with a space, ", or end of line
             let re = regex::Regex::new(r"include:[^ ,]*").unwrap();
             for cap in re.captures_iter(&record_string) {
-                let include = &cap[0].replace("include:", "");
+                let include = &cap[0].replace("include:", "").replace("\"", "");
                 if include == "spf.protection.outlook.com" {
                     continue; //skip the outlook include, its secure and reduces noise
                 }
