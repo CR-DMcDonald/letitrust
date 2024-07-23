@@ -59,7 +59,8 @@ Example 3 - specify a text file containing domains to be tested, one per line
 
 ### Sample Output
 
-```./letitrust -d bbc.co.uk
+```
+./letitrust -d bbc.co.uk
 
 ██      ███████ ████████     ██ ████████     ██████  ██    ██ ███████ ████████ 
 ██      ██         ██        ██    ██        ██   ██ ██    ██ ██         ██    
@@ -70,53 +71,141 @@ Example 3 - specify a text file containing domains to be tested, one per line
 letitrust v0.1
 Written by Darren McDonald, Cryptic Red
 
-Checking bbc.co.uk... 
-Found domain: s4c.cymru ... unavailable
-Found domain: dyerspodcast.com ... unavailable
-Found domain: riverpictures.co.uk ... unavailable
-Found domain: bbcshop.com.au ... unavailable
-Found domain: bbcpolska.com ... unavailable
-Found domain: windmillroad.com ... unavailable
-Found domain: tracklicensing.com ... unavailable
-Found domain: bbcwwtest.com ... available
-Found domain: TE.extra.bbc.com ... converted to bbc.com ... unavailable
-Found domain: beeb.net ... unavailable
-Found domain: twoentertain.co.uk ... available
-Found domain: wkbbc.com.cn ... available
-Found domain: bbc.com ... unavailable
-Found domain: topgear.com ... unavailable
-Found domain: s4c.wales ... unavailable
-Found domain: bbcnordic.com ... unavailable
-Found domain: motdmag.co.uk ... available
-Found domain: onebbc.onmicrosoft.com ... skipped
-Found domain: onebbc.mail.onmicrosoft.com ... skipped
-Found domain: main.bbc.co.uk ... converted to bbc.co.uk ... unavailable
-Found domain: bbc.co.uk ... unavailable
-Found domain: BBCtopgearmagazine.com ... unavailable
-Found domain: 7e5010.msamer01.cloud-voice.io ... converted to cloud-voice.io ... unavailable
-Found domain: bbccanada.ca ... unavailable
-Found domain: bbclifestyle.co.za ... unavailable
-Found domain: bbcmotiongallery.com ... unavailable
-Found domain: bbcsouthafrica.com ... unavailable
-Found domain: 2entertain.co.uk ... unavailable
-Found domain: bbcentertainment.com ... unavailable
-Found domain: 7e5010.msapac01.cloud-voice.io ... converted to cloud-voice.io ... unavailable
-Found domain: s4c.co.uk ... unavailable
-Found domain: demonmusicgroup.co.uk ... unavailable
-Found domain: bbcfootage.com ... unavailable
-Found domain: bestofbritainstore.com ... available
-Found domain: bbcgermany.de ... unavailable
-Found domain: bbcantiquesroadshowmag.com ... available
-Found domain: bbcworldwide.com ... unavailable
-Found domain: 7e5010.msemea01.cloud-voice.io ... converted to cloud-voice.io ... unavailable
-Found domain: crimsonrecords.com ... unavailable
-Found domain: bbcaudiobooks.co.uk ... unavailable
-Found domain: bbcmagazinesadvertising.com ... unavailable
-Found domain: doctorwhoexperience.com ... unavailable
-Found domain: bbcaudiobooks.com ... unavailable
-Found domain: bbclaproduction.com ... available
-Found domain: bbc-asia.com ... unavailable
-Found domain: bbcbrit.com ... unavailable
+Checking bbc.co.uk... unavailable
+  bbc.co.uk has a softfail spf record
+Found spf include: spf.sis.bbc.co.uk ... converted to bbc.co.uk ... unavailable
+Found spf include: spf.messagelabs.com ... converted to messagelabs.com ... unavailable
+  bbc.co.uk has a DMARC record with p=none
+Found Azure Tenant domain: bbcgermany.de ... unavailable
+  bbcgermany.de has a DMARC record with p=none
+Found Azure Tenant domain: main.bbc.co.uk ... converted to bbc.co.uk ... unavailable
+  bbc.co.uk has a softfail spf record
+Found spf include: spf.sis.bbc.co.uk ... converted to bbc.co.uk ... unavailable
+Found spf include: spf.messagelabs.com ... converted to messagelabs.com ... unavailable
+  bbc.co.uk has a DMARC record with p=none
+Found Azure Tenant domain: onebbc.mail.onmicrosoft.com ... skipped
+Found Azure Tenant domain: bbcaudiobooks.co.uk ... unavailable
+  bbcaudiobooks.co.uk does not have an spf record
+  bbcaudiobooks.co.uk does not have a DMARC record
+Found Azure Tenant domain: bbcsouthafrica.com ... unavailable
+  bbcsouthafrica.com does not have a DMARC record
+Found Azure Tenant domain: bbclaproduction.com ... available
+  bbclaproduction.com does not have an spf record
+  bbclaproduction.com does not have a DMARC record
+Found Azure Tenant domain: s4c.cymru ... unavailable
+  s4c.cymru has a softfail spf record
+Found spf include: spf.messagelabs.com ... converted to messagelabs.com ... unavailable
+Found spf include: ciphr247.com ... unavailable
+  s4c.cymru has a DMARC record with p=none
+Found Azure Tenant domain: twoentertain.co.uk ... available
+  twoentertain.co.uk does not have an spf record
+  twoentertain.co.uk does not have a DMARC record
+Found Azure Tenant domain: demonmusicgroup.co.uk ... unavailable
+  demonmusicgroup.co.uk has a softfail spf record
+Found spf include: spf.messagelabs.com ... converted to messagelabs.com ... unavailable
+  demonmusicgroup.co.uk has a DMARC record with p=none
+Found Azure Tenant domain: bbcpolska.com ... unavailable
+  bbcpolska.com has a DMARC record with p=none
+Found Azure Tenant domain: 7e5010.msapac01.cloud-voice.io ... converted to cloud-voice.io ... unavailable
+Found spf include: spf.mailjet.com ... converted to mailjet.com ... unavailable
+Found Azure Tenant domain: bbcbrit.com ... unavailable
+  bbcbrit.com does not have a DMARC record
+Found Azure Tenant domain: motdmag.co.uk ... available
+  motdmag.co.uk does not have an spf record
+  motdmag.co.uk does not have a DMARC record
+Found Azure Tenant domain: 7e5010.msemea01.cloud-voice.io ... converted to cloud-voice.io ... unavailable
+Found spf include: spf.mailjet.com ... converted to mailjet.com ... unavailable
+Found Azure Tenant domain: s4c.wales ... unavailable
+  s4c.wales has a softfail spf record
+Found spf include: spf.messagelabs.com ... converted to messagelabs.com ... unavailable
+  s4c.wales has a DMARC record with p=none
+Found Azure Tenant domain: bbcwwtest.com ... available
+  bbcwwtest.com does not have an spf record
+  bbcwwtest.com does not have a DMARC record
+Found Azure Tenant domain: bbc-asia.com ... unavailable
+  bbc-asia.com has a DMARC record with p=none
+Found Azure Tenant domain: 7e5010.msamer01.cloud-voice.io ... converted to cloud-voice.io ... unavailable
+Found spf include: spf.mailjet.com ... converted to mailjet.com ... unavailable
+Found Azure Tenant domain: s4c.co.uk ... unavailable
+  s4c.co.uk has a softfail spf record
+Found spf include: spf.messagelabs.com ... converted to messagelabs.com ... unavailable
+  s4c.co.uk has a DMARC record with p=none
+Found Azure Tenant domain: bbclifestyle.co.za ... unavailable
+  bbclifestyle.co.za does not have an spf record
+  bbclifestyle.co.za does not have a DMARC record
+Found Azure Tenant domain: crimsonrecords.com ... unavailable
+  crimsonrecords.com has a DMARC record with p=none
+Found Azure Tenant domain: bbcfootage.com ... unavailable
+  bbcfootage.com has a softfail spf record
+Found spf include: spf.sender.xserver.jp ... converted to xserver.jp ... unavailable
+  bbcfootage.com does not have a DMARC record
+Found Azure Tenant domain: beeb.net ... unavailable
+  beeb.net does not have an spf record
+  beeb.net does not have a DMARC record
+Found Azure Tenant domain: bbcantiquesroadshowmag.com ... available
+  bbcantiquesroadshowmag.com does not have an spf record
+  bbcantiquesroadshowmag.com does not have a DMARC record
+Found Azure Tenant domain: bbc.com ... unavailable
+  bbc.com has a softfail spf record
+Found spf include: spf.messagelabs.com ... converted to messagelabs.com ... unavailable
+  bbc.com has a DMARC record with p=none
+Found Azure Tenant domain: bbc.co.uk ... unavailable
+  bbc.co.uk has a softfail spf record
+Found spf include: spf.sis.bbc.co.uk ... converted to bbc.co.uk ... unavailable
+Found spf include: spf.messagelabs.com ... converted to messagelabs.com ... unavailable
+  bbc.co.uk has a DMARC record with p=none
+Found Azure Tenant domain: bbcworldwide.com ... unavailable
+Found Azure Tenant domain: bbccanada.ca ... unavailable
+  bbccanada.ca does not have an spf record
+  bbccanada.ca does not have a DMARC record
+Found Azure Tenant domain: 2entertain.co.uk ... unavailable
+  2entertain.co.uk has a DMARC record with p=none
+Found Azure Tenant domain: tracklicensing.com ... unavailable
+  tracklicensing.com has a DMARC record with p=none
+Found Azure Tenant domain: bbcmotiongallery.com ... unavailable
+  bbcmotiongallery.com has a DMARC record with p=none
+Found Azure Tenant domain: bbcnordic.com ... unavailable
+  bbcnordic.com does not have a DMARC record
+Found Azure Tenant domain: dyerspodcast.com ... unavailable
+  dyerspodcast.com has a softfail spf record
+Found spf include: spf.messagelabs.com ... converted to messagelabs.com ... unavailable
+Found Azure Tenant domain: BBCtopgearmagazine.com ... unavailable
+  BBCtopgearmagazine.com has a softfail spf record
+Found spf include: spf.exclaimer.net ... converted to exclaimer.net ... unavailable
+Found spf include: spf.messagelabs.com ... converted to messagelabs.com ... unavailable
+Found spf include: eu._netblocks.mimecast.com ... converted to mimecast.com ... unavailable
+  BBCtopgearmagazine.com has a DMARC record with p=none
+Found Azure Tenant domain: doctorwhoexperience.com ... unavailable
+  doctorwhoexperience.com does not have an spf record
+  doctorwhoexperience.com does not have a DMARC record
+Found Azure Tenant domain: bbcaudiobooks.com ... unavailable
+  bbcaudiobooks.com does not have an spf record
+  bbcaudiobooks.com has a DMARC record with p=none
+Found Azure Tenant domain: topgear.com ... unavailable
+Found spf include: msgfocus.com ... unavailable
+  topgear.com has a DMARC record with p=none
+Found Azure Tenant domain: riverpictures.co.uk ... unavailable
+  riverpictures.co.uk has a softfail spf record
+Found spf include: spf.messagelabs.com ... converted to messagelabs.com ... unavailable
+Found Azure Tenant domain: bbcmagazinesadvertising.com ... unavailable
+  bbcmagazinesadvertising.com does not have a DMARC record
+Found Azure Tenant domain: TE.extra.bbc.com ... converted to bbc.com ... unavailable
+  bbc.com has a softfail spf record
+Found spf include: spf.messagelabs.com ... converted to messagelabs.com ... unavailable
+  bbc.com has a DMARC record with p=none
+Found Azure Tenant domain: bbcshop.com.au ... unavailable
+  bbcshop.com.au has a softfail spf record
+  bbcshop.com.au does not have a DMARC record
+Found Azure Tenant domain: wkbbc.com.cn ... available
+  wkbbc.com.cn does not have an spf record
+  wkbbc.com.cn does not have a DMARC record
+Found Azure Tenant domain: bbcentertainment.com ... unavailable
+  bbcentertainment.com does not have a DMARC record
+Found Azure Tenant domain: bestofbritainstore.com ... available
+  bestofbritainstore.com does not have an spf record
+  bestofbritainstore.com does not have a DMARC record
+Found Azure Tenant domain: windmillroad.com ... unavailable
+Found Azure Tenant domain: onebbc.onmicrosoft.com ... skipped
 ```
 
 ### Further Reading
